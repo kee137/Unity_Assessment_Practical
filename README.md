@@ -1,2 +1,61 @@
-# Unity 实操考核
-# Unity 实操考核 – Demo  **Unity：** 2022.3.62f1c1 | **渲染管线：** 内置管线 | **输入：** 旧版 Input Manager **场景：** `Main.unity` – 打开工程后直接点击 Play 即可运行。未使用任何美术资源或插件（仅使用内置几何体和纯色材质）。  ## 操作方式 - **WASD** – 移动（5 m/s，斜向移动已归一化） - **按住鼠标左键** – 射击（5 发/秒）；子弹朝玩家面朝的方向飞行 - **ESC** – 暂停 / 继续  ## 已完成内容 - **任务 A：** 使用 CharacterController 移动，玩家朝向移动方向，相机以约 45° 俯视并用 Lerp 平滑跟随，用墙体 Cube 防止玩家离开地面。相机使用 SphereCast 检测，不会穿墙。 - **任务 B：** 子弹对象池（不在每次射击时 Instantiate/Destroy），子弹 2 秒后或命中后回收，敌人 3 点血，UI 显示“击杀”数。 - **任务 C：** 敌人状态机（巡逻 / 追击 / 攻击）。8m 进入追击，12m 放弃追击。1.5m 内攻击（2m 退出攻击），攻击表现为缩放脉冲。追击速度 4，慢于玩家。敌人之间保持最小距离，不会叠在一起。 - **任务 D（全部代码类加分项）：** 敌人死亡 3 秒后在原点重生并重置血量与状态；玩家血量系统，用 Slider 显示血条（攻击范围内的敌人会扣血）；ESC 暂停菜单，`Time.timeScale = 0`；击杀数用 PlayerPrefs 存档。  ## 未完成 / 说明 - 没有单独的 Idle 状态：敌人直接进入巡逻。 - 击杀数是有意保留的（PlayerPrefs）。可用 *Edit > Clear All PlayerPrefs* 重置。 - 玩家死亡后直接重新加载场景（没有结算界面）。  ## 类结构 ``` PlayerMove ─ 玩家移动/转向                 CamFollow ─ 平滑跟随 + 防穿墙 Shooter ──► BulletPool ──► Bullet ──命中──► Enemy ──► GameManager（击杀、存档、UI）                                             ▲ EnemyAI（状态机）──伤害──► PlayerHealth（血条 Slider）            PauseMenu ``` **为什么这样拆分：** 每个脚本只负责一件事。`Bullet` 只需要调用 `Enemy.TakeDamage`，不会接触 AI 代码。`Enemy` 负责血量/死亡/重生，`EnemyAI` 负责移动和状态，修改其中一个不会影响另一个。`BulletPool` 单独存在，让子弹可以复用。`GameManager` 是唯一操作击杀 UI 和存档数据的地方。  ---  # Unity Practical Assessment – Demo  **Unity:** 2022.3.62f1c1 | **Pipeline:** Built-in | **Input:** legacy Input Manager **Scene:** `Main.unity` – open the project and press Play. No assets or plugins used (built-in primitives and plain colored materials only).  ## Controls - **WASD** – move (5 m/s, diagonal normalized) - **Hold left mouse** – shoot (5 shots/sec); bullets fly in the direction the player is facing - **ESC** – pause / resume  ## What I did - **A:** CharacterController movement, player faces move direction, smooth Lerp camera at ~45°, wall Cubes keep the player on the ground. The camera uses a SphereCast so it never goes through walls. - **B:** Bullet object pool (no Instantiate/Destroy per shot), bullets recycle after 2s or on hit, enemies have 3 HP, "击杀" counter UI. - **C:** Enemy state machine (Patrol / Chase / Attack). Chase starts at 8m, ends at 12m. Attack at 1.5m (exits at 2m) with a scale-pulse effect. Chase speed 4 is slower than the player. Enemies keep a minimum distance so they don't stack. - **D (all code bonuses):** enemy respawn after 3s at the original position with HP/state reset; player HP with a Slider (enemies in attack range deal damage); ESC pause menu with `Time.timeScale = 0`; kill count saved with PlayerPrefs.  ## Not done / notes - No separate Idle state: enemies go straight to Patrol. - Kill count persists on purpose (PlayerPrefs). Use *Edit > Clear All PlayerPrefs* to reset. - When the player dies the scene simply reloads (no game-over screen).  ## Class structure ``` PlayerMove ─ moves/rotates player          CamFollow ─ smooth follow + wall check Shooter ──► BulletPool ──► Bullet ──hit──► Enemy ──► GameManager (kills, save, UI)                                             ▲ EnemyAI (state machine) ──damage──► PlayerHealth (HP Slider)      PauseMenu ``` **Why split this way:** each script has one job. `Bullet` only needs `Enemy.TakeDamage`, so it never touches AI code. `Enemy` owns health/death/respawn, `EnemyAI` owns movement and states, so changing one doesn't break the other. `BulletPool` is separate so bullets are reused. `GameManager` is the only place that touches the kill UI and save data.
+# Unity 实操考核 – Demo
+
+**Unity：** 2022.3.62f1c1 | **渲染管线：** 内置管线 | **输入：** 旧版 Input Manager
+**场景：** `Main.unity` – 打开工程后直接点击 Play 即可运行。未使用任何美术资源或插件（仅使用内置几何体和纯色材质）。
+
+## 操作方式
+- **WASD** – 移动（5 m/s，斜向移动已归一化）
+- **按住鼠标左键** – 射击（5 发/秒）；子弹朝玩家面朝的方向飞行
+- **ESC** – 暂停 / 继续
+
+## 已完成内容
+- **任务 A：** 使用 CharacterController 移动，玩家朝向移动方向，相机以约 45° 俯视并用 Lerp 平滑跟随，用墙体 Cube 防止玩家离开地面。相机使用 SphereCast 检测，不会穿墙。
+- **任务 B：** 子弹对象池（不在每次射击时 Instantiate/Destroy），子弹 2 秒后或命中后回收，敌人 3 点血，UI 显示“击杀”数。
+- **任务 C：** 敌人状态机（巡逻 / 追击 / 攻击）。8m 进入追击，12m 放弃追击。1.5m 内攻击（2m 退出攻击），攻击表现为缩放脉冲。追击速度 4，慢于玩家。敌人之间保持最小距离，不会叠在一起。
+- **任务 D（全部代码类加分项）：** 敌人死亡 3 秒后在原点重生并重置血量与状态；玩家血量系统，用 Slider 显示血条（攻击范围内的敌人会扣血）；ESC 暂停菜单，`Time.timeScale = 0`；击杀数用 PlayerPrefs 存档。
+
+## 未完成 / 说明
+- 没有单独的 Idle 状态：敌人直接进入巡逻。
+- 击杀数是有意保留的（PlayerPrefs）。可用 *Edit > Clear All PlayerPrefs* 重置。
+- 玩家死亡后直接重新加载场景（没有结算界面）。
+
+## 类结构
+```
+PlayerMove ─ 玩家移动/转向                 CamFollow ─ 平滑跟随 + 防穿墙
+Shooter ──► BulletPool ──► Bullet ──命中──► Enemy ──► GameManager（击杀、存档、UI）
+                                            ▲
+EnemyAI（状态机）──伤害──► PlayerHealth（血条 Slider）            PauseMenu
+```
+**为什么这样拆分：** 每个脚本只负责一件事。`Bullet` 只需要调用 `Enemy.TakeDamage`，不会接触 AI 代码。`Enemy` 负责血量/死亡/重生，`EnemyAI` 负责移动和状态，修改其中一个不会影响另一个。`BulletPool` 单独存在，让子弹可以复用。`GameManager` 是唯一操作击杀 UI 和存档数据的地方。
+
+---
+
+# Unity Practical Assessment – Demo
+
+**Unity:** 2022.3.62f1c1 | **Pipeline:** Built-in | **Input:** legacy Input Manager
+**Scene:** `Main.unity` – open the project and press Play. No assets or plugins used (built-in primitives and plain colored materials only).
+
+## Controls
+- **WASD** – move (5 m/s, diagonal normalized)
+- **Hold left mouse** – shoot (5 shots/sec); bullets fly in the direction the player is facing
+- **ESC** – pause / resume
+
+## What I did
+- **A:** CharacterController movement, player faces move direction, smooth Lerp camera at ~45°, wall Cubes keep the player on the ground. The camera uses a SphereCast so it never goes through walls.
+- **B:** Bullet object pool (no Instantiate/Destroy per shot), bullets recycle after 2s or on hit, enemies have 3 HP, "击杀" counter UI.
+- **C:** Enemy state machine (Patrol / Chase / Attack). Chase starts at 8m, ends at 12m. Attack at 1.5m (exits at 2m) with a scale-pulse effect. Chase speed 4 is slower than the player. Enemies keep a minimum distance so they don't stack.
+- **D (all code bonuses):** enemy respawn after 3s at the original position with HP/state reset; player HP with a Slider (enemies in attack range deal damage); ESC pause menu with `Time.timeScale = 0`; kill count saved with PlayerPrefs.
+
+## Not done / notes
+- No separate Idle state: enemies go straight to Patrol.
+- Kill count persists on purpose (PlayerPrefs). Use *Edit > Clear All PlayerPrefs* to reset.
+- When the player dies the scene simply reloads (no game-over screen).
+
+## Class structure
+```
+PlayerMove ─ moves/rotates player          CamFollow ─ smooth follow + wall check
+Shooter ──► BulletPool ──► Bullet ──hit──► Enemy ──► GameManager (kills, save, UI)
+                                            ▲
+EnemyAI (state machine) ──damage──► PlayerHealth (HP Slider)      PauseMenu
+```
+**Why split this way:** each script has one job. `Bullet` only needs `Enemy.TakeDamage`, so it never touches AI code. `Enemy` owns health/death/respawn, `EnemyAI` owns movement and states, so changing one doesn't break the other. `BulletPool` is separate so bullets are reused. `GameManager` is the only place that touches the kill UI and save data.
